@@ -92,7 +92,11 @@ class TelegramEngine(BaseEngine):
 
         # Handle each new message, send its responses and then request
         # updates again.
-        tasks = [self.message_handler(msg) for msg in updates['result']]
+        try :
+            tasks = [self.message_handler(msg) for msg in updates['result']]
+        except KeyError:
+            logger.warning(updates)
+            raise Exception('telegram messages were wrong.')
         await asyncio.gather(*tasks)
         asyncio.ensure_future(self.polling(last_update))
 
